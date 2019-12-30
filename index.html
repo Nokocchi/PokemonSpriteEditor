@@ -7,10 +7,18 @@
     <link rel="stylesheet" href="stylesheet.css">
   </head>
   <body>
-    <div id="pokemonList">
+    <div id="pokemonSelectContainer">
+      <select id="dropdown">
+      </select>
+      <form autocomplete="off">
+        <div class="autocomplete" style="width:300px;">
+          <input id="autocompleteInput" type="text" name="autocompleteInput" placeholder="Search for Pokemon...">
+        </div>
+      </form>
     </div>
-    <img id="testimg">
   </body>
-    <script src="imgDirJson.js"></script>
-  <script src="main.js"></script>
+    <script src="imgDirStructure.js"></script>
+    <script src="pkmnNrNameMap.js"></script>
+    <script src="pkmnNameNrMap.js"></script>
+    <script src="main.js"></script>
 </html>

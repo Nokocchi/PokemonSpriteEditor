@@ -1,3 +1,13 @@
+# -----------------------------------------------------------
+# Traverses the /src directory containing all the sprites and writes the structure to .js as json
+# I don't care about error handling here. This script is only meant to be run by me in the rare cases that
+# I add, change or remove contents from the /src folder
+# In order to minimize file size: [_t = type, _p = path, c = children, d = directory, f = file]
+#
+# Nokocchi, 2019
+# -----------------------------------------------------------
+
+
 import os
 import json
 
@@ -21,5 +31,7 @@ if __name__ == '__main__':
     data = rec(root)
     os.chdir("../")
     dataStr = json.dumps(data, sort_keys=True)
-    with open('imgDirStructure.json', 'w') as json_file:
-        json.dump(dataStr, json_file)
+    with open('imgDirStructure.js', 'w') as file:
+        file.write("var getDirectoryAsJson = function(){ return ")
+        json.dump(dataStr, file)
+        file.write("}")
