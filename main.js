@@ -9,13 +9,48 @@ function init() {
   globalDataContainer.nameNrMap = JSON.parse(nameNrMapStr);
   var nrNameMapStr = getPkmnNrNameMap();
   globalDataContainer.nrNameMap = JSON.parse(nrNameMapStr);
+  var nrPathMapStr = getPathByNrMap();
+  globalDataContainer.nrPathMap = JSON.parse(nrPathMapStr);
 
   initAutocomplete();
   initDropdown();
 }
 
 function displayChosenPkmns(nr) {
-  window.alert(nr);
+  document.getElementById("imgSelectContainer").innerHTML = "";
+  var foundImages = globalDataContainer.nrPathMap[nr];
+  console.dir(foundImages);
+  for(var entry in foundImages){
+    var img = document.createElement("img");
+    img.src = globalDataContainer.nrPathMap[nr][entry];
+    document.getElementById("imgSelectContainer").appendChild(img);
+  }
+}
+
+function findImgByNr(obj, nr, currPathArr, imgs) {
+  if (obj["_t"] === "f") { //If type is file
+    if (obj["_p"] === (nr)) {
+      console.log(obj);
+      var path = currPathArr.join("/");
+      return [path + nr + ".png"];
+    }
+  }
+  if (obj["_t"] === "d" && obj.hasOwnProperty("c")) { //If type is directory and has children
+    for (var child in obj["c"]) {
+      currPathArr.push(obj["_p"]);
+      var foundImg = findImgByNr(obj["c"][child], nr, currPathArr, imgs);
+      if (foundImg) {
+        currPathArr.pop();
+        imgs.push(foundImg)
+        return imgs;
+      }
+    }
+  }
+  return null;
+};
+
+function insertImgIntoContainer(obj) {
+  //console.log(obj[i]);
 }
 
 function nameToNr(name) {
