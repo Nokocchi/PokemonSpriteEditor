@@ -17,40 +17,61 @@ function init() {
 }
 
 function displayChosenPkmns(nr) {
-  document.getElementById("imgSelectContainer").innerHTML = "";
   var foundImages = globalDataContainer.nrPathMap[nr];
-  console.dir(foundImages);
-  for(var entry in foundImages){
+  var sorted = sortImgPathsByGeneration(foundImages);
+  writeImageListToPage(sorted);
+}
+
+function writeImageListToPage(sortedImgPaths) {
+  document.getElementById("imgSelectContainer").innerHTML = "";
+  for (var index in sortedImgPaths) {
     var img = document.createElement("img");
-    img.src = globalDataContainer.nrPathMap[nr][entry];
+    img.src = sortedImgPaths[index];
     document.getElementById("imgSelectContainer").appendChild(img);
   }
 }
 
-function findImgByNr(obj, nr, currPathArr, imgs) {
-  if (obj["_t"] === "f") { //If type is file
-    if (obj["_p"] === (nr)) {
-      console.log(obj);
-      var path = currPathArr.join("/");
-      return [path + nr + ".png"];
+function sortImgPathsByGeneration(paths) {
+  var obj = {
+    rgby: [],
+    gsc: [],
+    rse: [],
+    frlg: [],
+    dppt: [],
+    hgss: []
+  };
+  for (var index in paths) {
+    var path = paths[index];
+    if (contains(path, ["firered", "leafgreen"])){
+      obj.frlg.push(path)
     }
-  }
-  if (obj["_t"] === "d" && obj.hasOwnProperty("c")) { //If type is directory and has children
-    for (var child in obj["c"]) {
-      currPathArr.push(obj["_p"]);
-      var foundImg = findImgByNr(obj["c"][child], nr, currPathArr, imgs);
-      if (foundImg) {
-        currPathArr.pop();
-        imgs.push(foundImg)
-        return imgs;
-      }
+    else if (contains(path, ["red", "green", "blue", "yellow"])){
+      obj.rgby.push(path)
     }
-  }
-  return null;
-};
+    else if (contains(path, ["heartgold", "soulsilver"])){
+      obj.hgss.push(path)
+    }
+    else if (contains(path, ["gold", "silver", "crystal"])){
+      obj.gsc.push(path)
+    }
+    else if (contains(path, ["ruby", "sapphire", "emerald"])){
+      obj.rse.push(path)
+    }
+    else if (contains(path, ["diamond", "pearl", "platinum"])){
+      obj.dppt.push(path)
+    }
 
-function insertImgIntoContainer(obj) {
-  //console.log(obj[i]);
+  }
+  console.dir(obj);
+  return obj.rgby.concat(obj.gsc, obj.rse, obj.frlg, obj.dppt, obj.hgss);
+}
+
+function contains(target, pattern){
+    var value = 0;
+    pattern.forEach(function(word){
+      value = value + target.includes(word);
+    });
+    return (value > 0)
 }
 
 function nameToNr(name) {
