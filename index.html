@@ -12,13 +12,18 @@
   <div id="pokemonSelectContainer">
     <select id="dropdown">
     </select>
-    <form autocomplete="off">
-      <div class="autocomplete" style="width:300px;">
-        <input id="autocompleteInput" type="text" name="autocompleteInput" placeholder="Search for Pokemon...">
-      </div>
-    </form>
+    <div class="autocomplete" style="width:300px;">
+      <input id="autocompleteInput" type="text" name="autocompleteInput" placeholder="Search for Pokemon...">
+    </div>
+    <button type="button" id="backButton">Back to sprite selection</button>
+  </div>
+  <div>
+    <input type="checkbox" id="showShiny" unchecked> show shinies
+    <input type="checkbox" id="showBack" unchecked> show back sprites
   </div>
   <div id="imgSelectContainer">
+  </div>
+  <div id="editorContainer">
   </div>
 </body>
 <script src="imgDirStructure.js"></script>

@@ -14,6 +14,8 @@ function init() {
 
   initAutocomplete();
   initDropdown();
+  initCheckboxes();
+  initBackButton();
 }
 
 function displayChosenPkmns(nr) {
@@ -22,12 +24,68 @@ function displayChosenPkmns(nr) {
   writeImageListToPage(sorted);
 }
 
+function initEditor(imgPath) {
+  document.getElementById("imgSelectContainer").innerHTML = "";
+  document.getElementById("editorContainer").innerHTML = "";
+  var editor = document.getElementById("editorContainer");
+
+  var img = document.createElement("img");
+  img.src = imgPath;
+  editor.appendChild(img);
+  var canvas = document.createElement('canvas');
+  canvas.id = "pkmnCanvas";
+  canvas.width = img.width;
+  canvas.height = img.height;
+  var ctx = canvas.getContext("2d");
+  editor.appendChild(canvas);
+  ctx.drawImage(img, 0, 0);
+}
+
+function initBackButton() {
+  var button = document.getElementById("backButton");
+  button.onclick = function() {
+    var nr = globalDataContainer.nr;
+    if (nr) {
+      displayChosenPkmns(nr);
+    }
+  }
+}
+
 function writeImageListToPage(sortedImgPaths) {
   document.getElementById("imgSelectContainer").innerHTML = "";
+  document.getElementById("editorContainer").innerHTML = "";
+  var showShiny = document.getElementById("showShiny").checked;
+  var showBack = document.getElementById("showBack").checked;
+  var imgContainer = document.getElementById("imgSelectContainer");
   for (var index in sortedImgPaths) {
+    var path = sortedImgPaths[index];
+    if (path.includes("shiny")) {
+      if (!showShiny) {
+        continue;
+      }
+    }
+    if (path.includes("back")) {
+      if (!showBack) {
+        continue;
+      }
+    }
     var img = document.createElement("img");
-    img.src = sortedImgPaths[index];
-    document.getElementById("imgSelectContainer").appendChild(img);
+    img.src = path;
+    img.title = path;
+    img.id = path;
+    img.onclick = function(clickEvent) {
+      var imgPath = clickEvent.srcElement.src;
+      initEditor(imgPath);
+    }
+    img.onmouseover = function(mouseoverEvent) {
+      var id = mouseoverEvent.srcElement.id;
+      document.getElementById(id).style.border = "1px dotted orange";
+    }
+    img.onmouseout = function(mouseoutEvent) {
+      var id = mouseoutEvent.srcElement.id;
+      document.getElementById(id).style.border = "";
+    }
+    imgContainer.appendChild(img);
   }
 }
 
@@ -42,36 +100,30 @@ function sortImgPathsByGeneration(paths) {
   };
   for (var index in paths) {
     var path = paths[index];
-    if (contains(path, ["firered", "leafgreen"])){
+    if (contains(path, ["firered", "leafgreen"])) {
       obj.frlg.push(path)
-    }
-    else if (contains(path, ["red", "green", "blue", "yellow"])){
+    } else if (contains(path, ["red", "green", "blue", "yellow"])) {
       obj.rgby.push(path)
-    }
-    else if (contains(path, ["heartgold", "soulsilver"])){
+    } else if (contains(path, ["heartgold", "soulsilver"])) {
       obj.hgss.push(path)
-    }
-    else if (contains(path, ["gold", "silver", "crystal"])){
+    } else if (contains(path, ["gold", "silver", "crystal"])) {
       obj.gsc.push(path)
-    }
-    else if (contains(path, ["ruby", "sapphire", "emerald"])){
+    } else if (contains(path, ["ruby", "sapphire", "emerald"])) {
       obj.rse.push(path)
-    }
-    else if (contains(path, ["diamond", "pearl", "platinum"])){
+    } else if (contains(path, ["diamond", "pearl", "platinum"])) {
       obj.dppt.push(path)
     }
 
   }
-  console.dir(obj);
   return obj.rgby.concat(obj.gsc, obj.rse, obj.frlg, obj.dppt, obj.hgss);
 }
 
-function contains(target, pattern){
-    var value = 0;
-    pattern.forEach(function(word){
-      value = value + target.includes(word);
-    });
-    return (value > 0)
+function contains(target, pattern) {
+  var value = 0;
+  pattern.forEach(function(word) {
+    value = value + target.includes(word);
+  });
+  return (value > 0)
 }
 
 function nameToNr(name) {
@@ -94,7 +146,26 @@ function initDropdown() {
   }
   dropdown.onchange = function() {
     var nr = document.getElementById("dropdown").value;
+    globalDataContainer.nr = nr;
     displayChosenPkmns(nr);
+  }
+}
+
+function initCheckboxes() {
+  var shiny = document.getElementById("showShiny");
+  var imgs = document.getElementById("imgSelectContainer").children;
+  shiny.onclick = function() {
+    var nr = globalDataContainer.nr;
+    if (nr) {
+      displayChosenPkmns(nr);
+    }
+  }
+  var back = document.getElementById("showBack");
+  back.onclick = function() {
+    var nr = globalDataContainer.nr;
+    if (nr) {
+      displayChosenPkmns(nr);
+    }
   }
 }
 
@@ -126,6 +197,7 @@ function initAutocomplete() {
         b.addEventListener("click", function(e) {
           inp.value = this.getElementsByTagName("input")[0].value;
           nr = nameToNr(inp.value);
+          globalDataContainer.nr = nr;
           displayChosenPkmns(nr);
           closeAllLists();
         });
